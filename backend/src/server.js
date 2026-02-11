@@ -18,9 +18,29 @@ const __dirname = path.dirname(__filename);
 
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
-const CLIENT_ORIGIN = ENV.CLIENT_URL || 'https://chat-app-7-2kum.onrender.com';
 
-app.use(cors());
+// CORS configuration for both development and production
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  ENV.CLIENT_URL,
+  process.env.CLIENT_ORIGIN
+].filter(Boolean); // Remove undefined values
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);

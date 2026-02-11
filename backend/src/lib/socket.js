@@ -6,10 +6,18 @@ import {socketAuthMiddleware} from '../middleware/socket.auth.middleware.js';
 
 const app = express();
 const server = http.createServer(app);
-const CLIENT_ORIGIN = ENV.CLIENT_URL || 'https://chat-app-7-2kum.onrender.com';
+
+// Allow multiple origins for development and production
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    ENV.CLIENT_URL,
+    process.env.CLIENT_ORIGIN
+].filter(Boolean);
+
 const io = new Server(server,{
     cors: {
-        origin: [CLIENT_ORIGIN],
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true
     }
