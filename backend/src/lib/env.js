@@ -7,7 +7,7 @@ export const ENV = {
     RESEND_API_KEY: process.env.RESEND_API_KEY ,
     EMAIL_FROM: process.env.EMAIL_FROM,
     EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME ,
-    CLIENT_URL: process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? 'https://chat-app-7-2kum.onrender.com' : 'http://localhost:5173'),
+    CLIENT_URL: process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? 'https://chat-app-8-vlz4.onrender.com' : 'http://localhost:5173'),
     Cloudinary_Cloud_Name: process.env.Cloudinary_Cloud_Name,
     Cloudinary_API_Key: process.env.Cloudinary_API_Key,
     Cloudinary_API_Secret: process.env.Cloudinary_API_Secret
