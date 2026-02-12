@@ -31,6 +31,11 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, Postman, or same-origin)
     if (!origin) return callback(null, true);
+        // In production, if frontend and backend are on the same domain, allow it
+    if (ENV.NODE_ENV === 'production') {
+      // Allow the origin if it matches the request host
+      return callback(null, true);
+    }
     
     // Check against allowed origins for both development and production
     if (allowedOrigins.includes(origin)) {
