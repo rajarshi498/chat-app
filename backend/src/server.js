@@ -19,46 +19,29 @@ const __dirname = path.dirname(__filename);
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 
-// CORS configuration for both development and production
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  ENV.CLIENT_URL,
-  process.env.CLIENT_ORIGIN
-].filter(Boolean); // Remove undefined values
+// CORS only for development
+if (ENV.NODE_ENV !== 'production') {
+  app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true
+  }));
+}
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, Postman, or same-origin)
-    if (!origin) return callback(null, true);
-        // In production, if frontend and backend are on the same domain, allow it
-    if (ENV.NODE_ENV === 'production') {
-      // Allow the origin if it matches the request host
-      return callback(null, true);
-    }
-    
-    // Check against allowed origins for both development and production
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, false); // Don't throw error, just deny
-    }
-  },
-  credentials: true
-}));
-
-
+// API routes BEFORE static files
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-/* ✅ SERVE FRONTEND (ALWAYS) */
-app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+// Serve frontend static files in production
+if (ENV.NODE_ENV === 'production') {
+  const frontendPath = path.join(__dirname, "../../frontend/dist");
+  
+  app.use(express.static(frontendPath));
 
-app.get("*", (_, res) => {
-  res.sendFile(
-    path.join(__dirname, "../../frontend/dist/index.html")
-  );
-});
+  // Handle client-side routing - send all non-API requests to index.html
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+  });
+}
 
 const PORT = ENV.PORT || 3000;
 
